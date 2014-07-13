@@ -1,8 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<groupId>me.icymint</groupId>
 	<artifactId>sloth</artifactId>
-	<version>0.1-alpha</version>
+	<version>0.1-SNAPSHOT</version>
 	<name>sloth</name>
 	<description>Utils</description>
 	<licenses>
@@ -13,7 +14,9 @@
 	</licenses>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<github.global.server>releases</github.global.server>
+		<!-- github server corresponds to entry in ~/.m2/settings.xml -->
+		<github.global.server>snapshots</github.global.server>
+		<repo.url>https://raw.githubusercontent.com/leptonyu/maven-repo/master</repo.url>
 	</properties>
 	<developers>
 		<developer>
@@ -56,8 +59,9 @@
 				<version>0.9</version>
 				<configuration>
 					<message>Maven artifacts for ${project.version}</message>  <!-- git commit message -->
+					<noJekyll>true</noJekyll>                                  <!-- disable webpage processing -->
 					<outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> <!-- matches distribution management repository url above -->
-					<branch>refs/heads/releases</branch>                       <!-- remote branch name -->
+					<branch>refs/heads/mvn-repo</branch>                       <!-- remote branch name -->
 					<includes>
 						<include>**/*</include>
 					</includes>
@@ -66,6 +70,8 @@
 					<repositoryOwner>leptonyu</repositoryOwner>    <!-- github username -->
 				</configuration>
 				<executions>
+					<!-- run site-maven-plugin's 'site' target as part of the build's normal 
+						'deploy' phase -->
 					<execution>
 						<goals>
 							<goal>site</goal>
@@ -76,6 +82,22 @@
 			</plugin>
 		</plugins>
 	</build>
+	<repositories>
+		<repository>
+			<id>releases</id>
+			<url>${repo.url}/releases</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>snapshots</id>
+			<url>${repo.url}/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 	<distributionManagement>
 		<repository>
 			<id>internal.repo</id>
@@ -83,5 +105,4 @@
 			<url>file://${project.build.directory}/mvn-repo</url>
 		</repository>
 	</distributionManagement>
-	<groupId>me.icymint</groupId>
 </project>
