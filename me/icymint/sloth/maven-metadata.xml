@@ -5,9 +5,8 @@
   <versioning>
     <release>0.1-alpha</release>
     <versions>
-      <version>0.1-SNAPSHOT</version>
       <version>0.1-alpha</version>
     </versions>
-    <lastUpdated>20140713150817</lastUpdated>
+    <lastUpdated>20140713151209</lastUpdated>
   </versioning>
 </metadata>
