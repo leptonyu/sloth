@@ -9,16 +9,44 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import me.icymint.sloth.defer.Deferred;
 
 /**
+ * 模块化实现。一个模块是绑定了一些插件的集合，同时模块也可以创建新的模块。
+ * <p>
+ * <h2>1. 模块</h2>
+ * 模块绑定了固定数量的插件，这些插件的生命周期依赖模块的生命周期，它们在模块初始化的时候创建并初始化；在模块销毁的时候进行销毁。
+ * 模块不可以在运行期间创建新的插件，只能通过创建子模块来创建新的插件，这些新的插件的生命周期绑定到子模块。
+ * <p>
+ * <h2>2. 插件</h2>
+ * 插件是绑定在模块上的功能实现组件，所有功能的实现都是通过插件来完成。插件可以依赖别的插件，被依赖的插件会在合适的时候被创建。实现插件的类必须满足
+ * {@link Plugin}的实现条件。要获取模块中的某个插件，使用方法{@link #get(Class)}。
+ * <em>请注意，同一个模块上面每个插件实现类的实例只能存在一个。</em>
+ * <p>
+ * <h2>3. 子模块</h2>
+ * 模块可以通过{@link #fork(Class...)}
+ * 来创建子模块，创建的子模块的生命周期也被绑定到父模块中，但是子模块可以提前结束其生命周期。通过创建子模块的过程，模块及其子模块构成了一棵多叉树。
+ * 任何模块的子模块的生命周期都随着该模块的生命周期
+ * ，因此可通过终止父模块来终止该父模块所衍生出来的所有子模块。和进程树不同的是，模块树不允许任何子模块脱离父模块独立存在 ，这意味着顶级模块不能通过
+ * {@link #fork(Class...)}创建。
+ * 
  * @author Daniel
  *
  */
 public final class Module implements AutoCloseable {
+	/**
+	 * 模块的状态
+	 * 
+	 * @author Daniel
+	 *
+	 */
 	public static enum State {
 		/**
 		 * 新建模块。
@@ -37,7 +65,7 @@ public final class Module implements AutoCloseable {
 		 */
 		STOPPING,
 		/**
-		 * 关闭模块。
+		 * 模块终止。
 		 */
 		TERMINATE,
 		/**
@@ -67,20 +95,23 @@ public final class Module implements AutoCloseable {
 		return create();
 	}
 
-	private final Class<? extends Plugin>[] plugins;
+	private static final AtomicLong _index = new AtomicLong(0);
+
+	private final Class<? extends Plugin>[] _plugins;
 	private final Map<Class<? extends Plugin>, Plugin> _map = new HashMap<>();
+	private final Map<Class<? extends Plugin>, Exception> _pes = new HashMap<>();
 	private final AtomicReference<State> _state = new AtomicReference<>(
 			State.New);
 	private final Deferred _defferred = Deferred.create();
-	private final long id;
+	private final long _id;
 	private Module _parent = null;
-	private Map<Long, Module> _children = new ConcurrentHashMap<>();
-	private static final AtomicLong _index = new AtomicLong(0);
+	private final Map<Long, Module> _children = new ConcurrentHashMap<>();
+	private ExecutorService _pool;
 
 	private Module(Module context, Class<? extends Plugin>[] clzz) {
 		_parent = context;
-		plugins = clzz;
-		id = _index.incrementAndGet();
+		_plugins = clzz;
+		_id = _index.incrementAndGet();
 	}
 
 	/**
@@ -91,11 +122,12 @@ public final class Module implements AutoCloseable {
 	 */
 	@Override
 	public final void close() throws Exception {
-		if (_state.compareAndSet(State.READY, State.STOPPING)) {
+		if (_state.compareAndSet(State.READY, State.STOPPING)
+				|| _state.compareAndSet(State.STARTING, State.STOPPING)) {
 			try {
 				Module parent = _parent;
 				if (parent != null) {
-					parent._children.remove(id);
+					parent._children.remove(_id);
 				}
 				_defferred.close();
 				_state.set(State.TERMINATE);
@@ -135,7 +167,7 @@ public final class Module implements AutoCloseable {
 		Module mc = new Module(this, newPlugins);
 		mc.init();
 		// 初始化成功，需要把其卸载方法注册到父模块中。
-		_children.put(mc.id, mc);
+		_children.put(mc._id, mc);
 		return mc;
 	}
 
@@ -158,6 +190,18 @@ public final class Module implements AutoCloseable {
 			}
 		}
 		throw new PluginNotFoundException(clz.getName());
+	}
+
+	/**
+	 * 
+	 * @return 该线程池用于运行插件。
+	 */
+	private ExecutorService getPool() {
+		if (_parent != null) {
+			return _parent.getPool();
+		} else {
+			return _pool;
+		}
 	}
 
 	/**
@@ -190,12 +234,16 @@ public final class Module implements AutoCloseable {
 	public final void init() throws Exception {
 		if (_state.compareAndSet(State.New, State.STARTING)) {
 			try {
+				if (_parent == null) {
+					_pool = Executors.newCachedThreadPool();
+					_defferred.defer(_pool::shutdown);
+				}
 				// 创建插件实例队列。
-				if (plugins != null && plugins.length > 0) {
+				if (_plugins != null && _plugins.length > 0) {
 					Exception ex = new Exception();
 					Queue<Plugin> newPlugins = new LinkedList<>();
 					// 创建需要创建的插件实例列表，去除重复。
-					Arrays.stream(plugins).distinct().forEach(clz -> {
+					Arrays.stream(_plugins).distinct().forEach(clz -> {
 						try {
 							newPlugins.offer(newPlugin(clz));
 						} catch (Exception e) {
@@ -217,7 +265,34 @@ public final class Module implements AutoCloseable {
 					// 对插件进行初始化。
 					for (Plugin p : newAllPlugins) {
 						p.initAndDeferClose(this, _defferred);
+						// 运行可运行插件。
+						if (p instanceof RunnablePlugin) {
+							try {
+								Future<Exception> f = getPool().submit(() -> {
+									try {
+										((RunnablePlugin) p).execute(this);
+										return null;
+									} catch (Exception e) {
+										_pes.put(p.getClass(), e);
+										return e;
+									}
+								});
+								_defferred.defer(() -> {
+									while (!f.isDone()) {
+										TimeUnit.MILLISECONDS.sleep(10);
+									}
+									Exception e = f.get();
+									if (e != null) {
+										throw e;
+									}
+								});
+							} catch (Exception e) {
+								ex.addSuppressed(e);
+							}
+						}
 					}
+					if (ex.getSuppressed().length > 0)
+						throw ex;
 				}
 				// 清理fork的模块对象。
 				_defferred.defer(() -> {
@@ -279,7 +354,7 @@ public final class Module implements AutoCloseable {
 				checkAndAdd(newPlugin(clz), newAllPlugins);
 			}
 		}
-		// 把插件注册到新插件队列里面。放在是为了让其依赖的所有插件都排在该插件实例前面进行初始化。
+		// 把插件注册到新插件队列里面。放在最后是为了让其依赖的所有插件都排在该插件实例前面进行初始化。
 		newAllPlugins.offer(m);
 	}
 
@@ -289,6 +364,15 @@ public final class Module implements AutoCloseable {
 	 */
 	public final boolean isReady() {
 		return _state.get() == State.READY;
+	}
+
+	/**
+	 * 模块是否健康。
+	 * 
+	 * @return 模块是否健康，若有插件运行错误，则返回false。
+	 */
+	public final boolean isHealthy() {
+		return _pes.isEmpty();
 	}
 
 	/**
@@ -304,9 +388,9 @@ public final class Module implements AutoCloseable {
 	public String toString() {
 		Module p = _parent;
 		if (p != null) {
-			return p.toString() + "-" + id;
+			return p.toString() + "-" + _id;
 		} else {
-			return "Module:" + id;
+			return "Module:" + _id;
 		}
 	}
 
@@ -323,6 +407,6 @@ public final class Module implements AutoCloseable {
 	 * @return 获取本模块的唯一ID。
 	 */
 	public final long id() {
-		return id;
+		return _id;
 	}
 }

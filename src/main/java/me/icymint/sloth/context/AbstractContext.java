@@ -36,6 +36,7 @@ public abstract class AbstractContext implements Plugin {
 	@Override
 	public final void initAndDeferClose(Module provider, Deferred deferred)
 			throws Exception {
+		// 解析实现类的注解。
 		ContextConfiguration ccf = getClass().getAnnotation(
 				ContextConfiguration.class);
 		if (ccf == null) {
@@ -43,9 +44,11 @@ public abstract class AbstractContext implements Plugin {
 		}
 		File configpath = null;
 		Properties prop = new Properties();
+		// 默认值表示没有静态配置
 		if (!"".equals(ccf.path())) {
 			URL url = getClass().getResource(ccf.path());
 			if (url == null) {
+				// 无法获取静态配置。
 				throw new FileNotFoundException(ccf.path());
 			}
 			String f = url.getFile();
@@ -55,6 +58,7 @@ public abstract class AbstractContext implements Plugin {
 				prop.load(input);
 			}
 		}
+		// 下一步初始化
 		initAndDefer(provider, deferred, prop, configpath);
 	}
 }

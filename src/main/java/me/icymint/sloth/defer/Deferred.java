@@ -8,6 +8,8 @@ import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
+ * 延迟对象，其用于收集一系列的延后操作，最后调用{@link #close()}来执行。
+ * 
  * @author Daniel
  *
  */
