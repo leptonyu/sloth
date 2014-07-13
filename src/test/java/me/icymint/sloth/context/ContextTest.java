@@ -11,19 +11,19 @@ import org.junit.Test;
 
 public class ContextTest {
 	@ContextConfiguration
-	public static class ContextA extends AbstractContext {
+	public static class ContextA extends AbstractPropertiesContext {
 
 		@Override
 		protected void initAndDefer(Module context, Deferred deferred,
 				Properties properties, File configpath) {
 			System.out.println("Hello");
-			Assert.assertTrue(properties.stringPropertyNames().isEmpty());
+			Assert.assertNull(properties);
 		}
 
 	}
 
 	@ContextConfiguration(path = "/contextb.properties")
-	public static class ContextB extends AbstractContext {
+	public static class ContextB extends AbstractPropertiesContext {
 
 		@Override
 		protected void initAndDefer(Module context, Deferred deferred,

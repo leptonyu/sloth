@@ -6,7 +6,7 @@ package me.icymint.sloth.module;
  * @author Daniel
  *
  */
-public interface RunnablePlugin extends Plugin {
+public interface ExecutionThreadPlugin extends Plugin {
 	/**
 	 * 运行该插件，请注意安全结束的问题，如果需要一直运行，则请使用如下方案，保证能够顺利退出：
 	 * 

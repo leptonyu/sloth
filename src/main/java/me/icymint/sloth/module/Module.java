@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -20,18 +21,17 @@ import me.icymint.sloth.defer.Deferred;
 
 /**
  * 模块化实现。一个模块是绑定了一些插件的集合，同时模块也可以创建新的模块。
- * <p>
+ * 
  * <h2>1. 模块</h2>
  * 模块绑定了固定数量的插件，这些插件的生命周期依赖模块的生命周期，它们在模块初始化的时候创建并初始化；在模块销毁的时候进行销毁。
  * 模块不可以在运行期间创建新的插件，只能通过创建子模块来创建新的插件，这些新的插件的生命周期绑定到子模块。
- * <p>
+ * 
  * <h2>2. 插件</h2>
  * 插件是绑定在模块上的功能实现组件，所有功能的实现都是通过插件来完成。插件可以依赖别的插件，被依赖的插件会在合适的时候被创建。实现插件的类必须满足
  * {@link Plugin}的实现条件。要获取模块中的某个插件，使用方法{@link #get(Class)}。
  * <em>请注意，同一个模块上面每个插件实现类的实例只能存在一个。</em>
- * <p>
- * <h2>3. 子模块</h2>
- * 模块可以通过{@link #fork(Class...)}
+ * 
+ * <h2>3. 子模块</h2> 模块可以通过{@link #fork(Class...)}
  * 来创建子模块，创建的子模块的生命周期也被绑定到父模块中，但是子模块可以提前结束其生命周期。通过创建子模块的过程，模块及其子模块构成了一棵多叉树。
  * 任何模块的子模块的生命周期都随着该模块的生命周期
  * ，因此可通过终止父模块来终止该父模块所衍生出来的所有子模块。和进程树不同的是，模块树不允许任何子模块脱离父模块独立存在 ，这意味着顶级模块不能通过
@@ -41,6 +41,47 @@ import me.icymint.sloth.defer.Deferred;
  *
  */
 public final class Module implements AutoCloseable {
+	@FunctionalInterface
+	public static abstract interface Scheduler {
+
+		default void execute(ScheduledPlugin plugin, Module module)
+				throws Exception {
+			ScheduledExecutorService pool = Executors
+					.newSingleThreadScheduledExecutor();
+			module._defferred.defer(pool::shutdown);
+			execute(plugin::runOneIteration, pool);
+		}
+
+		void execute(Runnable run, ScheduledExecutorService pool)
+				throws Exception;
+
+		public static Scheduler newFixedDelaySchedule(long initialDelay,
+				long delay, TimeUnit unit) {
+			return new Scheduler() {
+
+				@Override
+				public void execute(Runnable run, ScheduledExecutorService pool)
+						throws Exception {
+					pool.scheduleWithFixedDelay(run, initialDelay, delay, unit);
+				}
+
+			};
+		}
+
+		public static Scheduler newFixedRateSchedule(long initialDelay,
+				long period, TimeUnit unit) {
+			return new Scheduler() {
+
+				@Override
+				public void execute(Runnable run, ScheduledExecutorService pool)
+						throws Exception {
+					pool.scheduleAtFixedRate(run, initialDelay, period, unit);
+				}
+
+			};
+		}
+	}
+
 	/**
 	 * 模块的状态
 	 * 
@@ -176,8 +217,11 @@ public final class Module implements AutoCloseable {
 	 * 
 	 * @param clz
 	 *            插件类名称。
+	 * @param <M>
+	 *            插件实际类型。
 	 * @return 可用的插件对象。
 	 * @throws PluginNotFoundException
+	 *             无法找到指定类型的插件实例则抛出违例。
 	 */
 	public final <M extends Plugin> M get(Class<M> clz)
 			throws PluginNotFoundException {
@@ -266,17 +310,19 @@ public final class Module implements AutoCloseable {
 					for (Plugin p : newAllPlugins) {
 						p.initAndDeferClose(this, _defferred);
 						// 运行可运行插件。
-						if (p instanceof RunnablePlugin) {
+						if (p instanceof ExecutionThreadPlugin) {
 							try {
-								Future<Exception> f = getPool().submit(() -> {
-									try {
-										((RunnablePlugin) p).execute(this);
-										return null;
-									} catch (Exception e) {
-										_pes.put(p.getClass(), e);
-										return e;
-									}
-								});
+								Future<Exception> f = getPool().submit(
+										() -> {
+											try {
+												((ExecutionThreadPlugin) p)
+														.execute(this);
+												return null;
+											} catch (Exception e) {
+												_pes.put(p.getClass(), e);
+												return e;
+											}
+										});
 								_defferred.defer(() -> {
 									while (!f.isDone()) {
 										TimeUnit.MILLISECONDS.sleep(10);
@@ -367,12 +413,12 @@ public final class Module implements AutoCloseable {
 	}
 
 	/**
-	 * 模块是否健康。
+	 * 模块是否健康，其要求比{@link #isReady()}要严格，保证所有插件都正确执行中。
 	 * 
 	 * @return 模块是否健康，若有插件运行错误，则返回false。
 	 */
 	public final boolean isHealthy() {
-		return _pes.isEmpty();
+		return isReady() && _pes.isEmpty();
 	}
 
 	/**

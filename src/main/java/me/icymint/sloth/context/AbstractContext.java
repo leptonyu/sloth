@@ -2,6 +2,7 @@ package me.icymint.sloth.context;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
@@ -16,7 +17,18 @@ import me.icymint.sloth.module.Plugin;
  * @author Daniel
  *
  */
-public abstract class AbstractContext implements Plugin {
+public abstract class AbstractContext<P> implements Plugin {
+
+	/**
+	 * 从流中解析出配置实例。
+	 * 
+	 * @param input
+	 *            配置输入流，可能是文件，也可能来源于网络。
+	 * @return 返回配置实例对象，例如{@link Properties}对象。
+	 * @throws IOException
+	 *             无法解析抛出违例。
+	 */
+	protected abstract P loadFromStream(InputStream input) throws IOException;
 
 	/**
 	 * 实现本上下文的后续初始化工作。
@@ -26,12 +38,12 @@ public abstract class AbstractContext implements Plugin {
 	 * @param deferred
 	 *            延迟执行注册对象
 	 * @param properties
-	 *            静态配置表
+	 *            配置实例，其由{@link #loadFromStream(InputStream)}方法创建。
 	 * @param configpath
 	 *            配置文件所在的路径，可以指定相对目录，若静态配置表不存在，则该值为null。
 	 */
 	protected abstract void initAndDefer(Module context, Deferred deferred,
-			Properties properties, File configpath);
+			P properties, File configpath);
 
 	@Override
 	public final void initAndDeferClose(Module provider, Deferred deferred)
@@ -43,7 +55,7 @@ public abstract class AbstractContext implements Plugin {
 			throw new ContextAnnotationNofFound(getClass().getName());
 		}
 		File configpath = null;
-		Properties prop = new Properties();
+		P p = null;
 		// 默认值表示没有静态配置
 		if (!"".equals(ccf.path())) {
 			URL url = getClass().getResource(ccf.path());
@@ -55,10 +67,10 @@ public abstract class AbstractContext implements Plugin {
 			f = f.substring(0, f.length() - ccf.path().length());
 			configpath = new File(f).getAbsoluteFile();
 			try (InputStream input = url.openStream()) {
-				prop.load(input);
+				p = loadFromStream(input);
 			}
 		}
 		// 下一步初始化
-		initAndDefer(provider, deferred, prop, configpath);
+		initAndDefer(provider, deferred, p, configpath);
 	}
 }
