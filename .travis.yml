@@ -1,12 +1,17 @@
 language: java
 script: mvn deploy --settings settings.xml
+after_success:
+  - mvn clean test jacoco:report coveralls:jacoco
 jdk:
 - oraclejdk8
 branches:
-  except:
-  - travis
-  - releases
+  only:
+  - master
+notifications:
+  email:
+    on_success: never
 env:
   global:
   - secure: 3RYwDbDWQu9k5jgx3Q2/hGGNPz2cE/qHZ7Qdlcn9Mre0f0YA4/YSCksGVvqv9E1YI7ljOZqkWqaEya2DUpYFb94kJqgOqFV30F87UBUYWLwfx/vc10bHMzFhmC6DaPqMjLZYQvBNefOCai2x4aLg7HqZw5RVGBVdqRrYx8ECnf0=
   - secure: JkaQgsNqHjitcZPTDcyETi4djgxKGFeIGtWxrrhSHXYs4cRcTH26/uvvyxvlnA1em1lzvyIKZ7MDh6q+qqEfWY+V8JAOEuHCp4B8yaLLH668sq34IAGXcTpx1zmBbntKftu9lnDV1mSUF7CEB/L7FFtPSrqH3N4NiVmKIhFEcUA=
+  - secure: zXaPRVtv9AQY3b4pwBrENBmuzsMVJ3F+KftIIomQgXmw3vxGXwH5K3Lvu0Z9r80KGKBnWCtLKY+H/RnELO6ozLXQTaQeUHT8DVDYr6A0afi25aeA9Y6mMFIKvmLlG+RciuDbCvGoERlkzxbu6SXsZzBBNb2jjjfJ/KPKis8yNvo=
