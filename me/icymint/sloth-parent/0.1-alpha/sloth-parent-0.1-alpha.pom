@@ -3,7 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>sloth-parent</artifactId>
 	<version>0.1-alpha</version>
+	<groupId>me.icymint</groupId>
+	<packaging>pom</packaging>
+	<name>Sloth</name>
 	<description>Utils</description>
+	<modules>
+		<module>sloth-core</module>
+	</modules>
 	<licenses>
 		<license>
 			<name>MIT License</name>
@@ -113,10 +119,4 @@
 			<url>file://${project.build.directory}/mvn-repo</url>
 		</repository>
 	</distributionManagement>
-	<groupId>me.icymint</groupId>
-	<packaging>pom</packaging>
-	<modules>
-		<module>sloth-core</module>
-	</modules>
-	<name>Sloth</name>
 </project>
