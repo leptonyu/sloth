@@ -7,5 +7,5 @@
   </parent>
   <artifactId>sloth</artifactId>
   <name>Sloth Core</name>
-  <description>核心包，不依赖任何第三方包的实现</description>
+  <description>Sloth core, with no third party dependency.</description>
 </project>
