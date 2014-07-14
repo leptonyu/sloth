@@ -6,13 +6,13 @@
 	<groupId>me.icymint</groupId>
 	<packaging>pom</packaging>
 	<name>Sloth</name>
-	<description>Utils</description>
+	<description>A Module Model.</description>
 	<modules>
 		<module>sloth-core</module>
 	</modules>
 	<licenses>
 		<license>
-			<name>MIT License</name>
+			<name>Apache License 2.0</name>
 			<url>https://raw.githubusercontent.com/leptonyu/sloth/master/LICENSE</url>
 		</license>
 	</licenses>
@@ -109,6 +109,25 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.eluder.coveralls</groupId>
+				<artifactId>coveralls-maven-plugin</artifactId>
+				<version>2.2.0</version>
+				<configuration>
+					<repoToken>${coveralltoken}</repoToken>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<format>xml</format>
+					<maxmem>256m</maxmem>
+					<!-- aggregated reports for multi-module projects -->
+					<aggregate>true</aggregate>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
