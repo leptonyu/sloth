@@ -38,6 +38,8 @@ import me.icymint.sloth.core.module.Plugin;
  */
 public abstract class AbstractContext<P> implements Plugin {
 
+	private P p = null;
+
 	/**
 	 * initial the context after create the configuration object.
 	 * 
@@ -51,9 +53,10 @@ public abstract class AbstractContext<P> implements Plugin {
 	 *            {@link #loadFromStream(InputStream)}.
 	 * @param configpath
 	 *            Class path in which the configuration file was found.
+	 * @throws Exception
 	 */
 	protected abstract void initAndDefer(Module context, Deferred deferred,
-			P properties, File configpath);
+			P properties, File configpath) throws Exception;
 
 	@Override
 	public final void initAndDeferClose(Module provider, Deferred deferred)
@@ -79,8 +82,17 @@ public abstract class AbstractContext<P> implements Plugin {
 				p = loadFromStream(input);
 			}
 		}
+		this.p = p;
 		// Next step
 		initAndDefer(provider, deferred, p, configpath);
+	}
+
+	/**
+	 * 
+	 * @return Get the configuration object.
+	 */
+	public P configuration() {
+		return p;
 	}
 
 	/**

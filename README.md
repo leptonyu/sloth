@@ -24,7 +24,7 @@ Then add the following dependency to your pom.xml.
 ```xml
 <dependency>
 	<groupId>me.icymint</groupId>
-	<artifactId>sloth</artifactId>
+	<artifactId>sloth-core</artifactId>
 	<version>0.1-alpha</version>
 </dependency>
 ```

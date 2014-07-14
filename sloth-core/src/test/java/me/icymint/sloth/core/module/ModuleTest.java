@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import me.icymint.sloth.core.defer.Deferred;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -70,7 +71,7 @@ public class ModuleTest {
 				// long xid = _id.getAndDecrement();
 				// Assert.assertEquals(id, xid);
 				System.out.println("Plugin D " + id + " stoping");
-				TimeUnit.MILLISECONDS.sleep(100);
+				TimeUnit.MILLISECONDS.sleep(10);
 				System.out.println("Plugin D " + id + " stop");
 			});
 		}
@@ -90,10 +91,10 @@ public class ModuleTest {
 		System.out.println(abc);
 		abc.init();
 		try {
-			for (int i = 0; i < 100000; i++) {
+			for (int i = 0; i < 10000; i++) {
 				abc.fork(PluginE.class).close();
 			}
-			for (int i = 0; i < 100000; i++) {
+			for (int i = 0; i < 10000; i++) {
 				abc.fork(PluginE.class);
 			}
 		} finally {
@@ -129,8 +130,8 @@ public class ModuleTest {
 		Module abc = Module.create(PluginC.class);
 		abc.init();
 		try {
-			abc.get(PluginB.class);
-			abc.get(PluginC.class);
+			abc.fetch(PluginB.class);
+			abc.fetch(PluginC.class);
 		} finally {
 			abc.close();
 		}
@@ -141,18 +142,18 @@ public class ModuleTest {
 		Module abc = Module.create(PluginA.class);
 		abc.init();
 		try {
-			abc.get(PluginA.class);
+			abc.fetch(PluginA.class);
 		} finally {
 			abc.close();
 		}
 	}
 
-	@Test(expected = PluginNotFoundException.class)
+	@Test
 	public void testPluginNotFound() throws Exception {
 		Module abc = Module.create();
 		abc.init();
 		try {
-			abc.get(PluginA.class);
+			Assert.assertNull(abc.fetch(PluginA.class));
 		} finally {
 			abc.close();
 		}

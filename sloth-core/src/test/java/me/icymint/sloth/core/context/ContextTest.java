@@ -56,7 +56,7 @@ public class ContextTest {
 		Module module = Module.create(ContextB.class);
 		module.init();
 		try {
-			module.get(ContextB.class);
+			module.fetch(ContextB.class);
 		} finally {
 			module.close();
 		}
@@ -67,7 +67,7 @@ public class ContextTest {
 		Module module = Module.create(ContextA.class);
 		module.init();
 		try {
-			module.get(ContextA.class);
+			module.fetch(ContextA.class);
 		} finally {
 			module.close();
 		}

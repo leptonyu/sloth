@@ -148,22 +148,14 @@ public final class Module implements AutoCloseable {
 			throws Exception {
 		Class<? extends Plugin> clzz = m.getClass();
 		checkAndAddClass(clzz, newAllPlugins);
-		Class<? extends Plugin> superclzz = null;
-		try {
-			superclzz = clzz.getSuperclass().asSubclass(Plugin.class);
-		} catch (Exception e) {
-		}
-		if (superclzz != null) {
-			checkAndAddClass(superclzz, newAllPlugins);
+		if (Plugin.class.isAssignableFrom(clzz.getSuperclass())) {
+			checkAndAddClass(clzz.getSuperclass().asSubclass(Plugin.class),
+					newAllPlugins);
 		}
 		for (Class<?> interzz : clzz.getInterfaces()) {
-			superclzz = null;
-			try {
-				superclzz = interzz.asSubclass(Plugin.class);
-			} catch (Exception e) {
-			}
-			if (superclzz != null) {
-				checkAndAddClass(superclzz, newAllPlugins);
+			if (Plugin.class.isAssignableFrom(interzz)) {
+				checkAndAddClass(interzz.asSubclass(Plugin.class),
+						newAllPlugins);
 			}
 		}
 		// put the plugin to the initial queue to initialize.
@@ -176,12 +168,10 @@ public final class Module implements AutoCloseable {
 		if (dp != null && dp.value().length > 0) {
 			// Iterate all the required plugins.
 			for (Class<? extends Plugin> clz : dp.value()) {
-				try {
-					// if the required plugin object exists then skip.
-					get(clz);
+
+				// if the required plugin object exists then skip.
+				if (fetch(clz) != null)
 					continue;
-				} catch (Exception e) {
-				}
 				// create and add the required plugin and its required
 				// plugins.
 				checkAndAdd(newPlugin(clz), newAllPlugins);
@@ -255,28 +245,83 @@ public final class Module implements AutoCloseable {
 	/**
 	 * Try to get the instance of specific type of Plugin,if the instance dose
 	 * not exist in the current module, then it will search it's parent module
-	 * until to the top Module. If can not find an instance then it will throws
-	 * {@link PluginNotFoundException}, it will never return null.
+	 * until to the top Module. If can not find an instance then it will return
+	 * null.
 	 * 
-	 * @param clz
+	 * @param pluginclzz
 	 *            The actual class of Plugin.
 	 * @param <M>
 	 *            Actual Plugin type.
-	 * @return The instance of the plugin.
-	 * @throws PluginNotFoundException
-	 *             If can not find one then throws the exception.
+	 * @return The instance of the plugin. null for none existence of plugin.
 	 */
-	public final <M extends Plugin> M get(Class<M> clz)
+	public final <M extends Plugin> M fetch(Class<M> pluginclzz)
 			throws PluginNotFoundException {
-		if (clz != null) {
-			Plugin mm = _map.get(clz);
+		if (pluginclzz != null) {
+			Plugin mm = _map.get(pluginclzz);
 			if (mm != null)
-				return clz.cast(mm);
+				return pluginclzz.cast(mm);
 			if (_parent != null) {
-				return _parent.get(clz);
+				return _parent.fetch(pluginclzz);
 			}
 		}
-		throw new PluginNotFoundException(clz.getName());
+		return null;
+	}
+
+	/**
+	 * Try to get the instance of specific type of Plugin,if the instance dose
+	 * not exist in the current module, then it will search it's parent module
+	 * until to the top Module. If can not find an instance then it will return
+	 * null.
+	 * <p>
+	 * In this method, it will try to find the Plugin instance as long as it can
+	 * case into the target class type. So
+	 * 
+	 * <pre>
+	 * Module module = Module.create(PluginA.class, PluginB.class);
+	 * module.init();
+	 * try {
+	 * 	Plugin plugin = find(Plugin.class);
+	 * 	// instance plugin will always be the type PluginA in this case.
+	 * } finally {
+	 * 	module.close();
+	 * }
+	 * </pre>
+	 * 
+	 * @param pluginclzz
+	 *            The actual class of Plugin.
+	 * @param <M>
+	 *            Actual Plugin type.
+	 * @return The instance of the plugin. null for none existence of plugin.
+	 */
+	public final <M extends Plugin> M find(Class<M> pluginclzz) {
+		if (pluginclzz != null) {
+			if (_plugins != null) {
+				Plugin abc = _map.get(pluginclzz);
+				if (abc != null)
+					return pluginclzz.cast(abc);
+				LinkedList<Class<? extends Plugin>> left = new LinkedList<>(
+						_map.keySet());
+				for (Class<? extends Plugin> tc : _plugins) {
+					if (pluginclzz.isAssignableFrom(tc)) {
+						Plugin m = _map.get(tc);
+						if (m != null)
+							return pluginclzz.cast(m);
+					}
+					left.remove(tc);
+				}
+				for (Class<? extends Plugin> tc : left) {
+					if (pluginclzz.isAssignableFrom(tc)) {
+						Plugin m = _map.get(tc);
+						if (m != null)
+							return pluginclzz.cast(m);
+					}
+				}
+				if (_parent != null) {
+					return _parent.find(pluginclzz);
+				}
+			}
+		}
+		return null;
 	}
 
 	/**

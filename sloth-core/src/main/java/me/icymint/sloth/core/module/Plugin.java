@@ -46,7 +46,7 @@ public interface Plugin {
 	 * <p>
 	 * When executing this method, all of the required plugins, which are
 	 * annotated by {@link RequirePlugins}, have completed the initialization
-	 * and are working properly. Use {@link Module#get(Class)} to get the
+	 * and are working properly. Use {@link Module#fetch(Class)} to get the
 	 * specified Plugin object. Plugins that are not required by this Plugin
 	 * should not be used by this method.
 	 * <p>
@@ -58,7 +58,7 @@ public interface Plugin {
 	 *            Deferred object.
 	 * @throws Exception
 	 *             Initialize error will throws Exception.
-	 * @see Module#get(Class)
+	 * @see Module#fetch(Class)
 	 * @see RequirePlugins
 	 */
 	void initAndDeferClose(Module module, Deferred deferred) throws Exception;
