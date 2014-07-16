@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>me.icymint</groupId>
+  <artifactId>sloth-jetty</artifactId>
+  <versioning>
+    <release>0.1-alpha</release>
+    <versions>
+      <version>0.1-alpha</version>
+    </versions>
+    <lastUpdated>20140716100035</lastUpdated>
+  </versioning>
+</metadata>
