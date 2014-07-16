@@ -40,7 +40,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.resource.Resource;
 import org.yaml.snakeyaml.Yaml;
@@ -273,7 +273,7 @@ public class JettyPlugin extends AbstractContext<JsonObject> {
 		_web = new File(_base, "web");
 		JsonObject jetty = config.getValue("jetty");
 		Server server = new Server(jetty.getValue("port").asInt(8080));
-		ResourceHandler handler = new ResourceHandler();
+		ContextHandler handler = new ContextHandler();
 		handler.setBaseResource(Resource.newResource(getWebDirectory()));
 		_mainhandler = new MainHandler(jetty.getValue("api").asString("/api"));
 		handler.setHandler(_mainhandler);

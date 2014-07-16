@@ -1,7 +1,5 @@
 language: java
 script: mvn deploy --settings settings.xml
-after_success:
-- mvn clean test jacoco:report coveralls:jacoco
 jdk:
 - oraclejdk8
 branches:
