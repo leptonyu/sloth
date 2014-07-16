@@ -13,27 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.icymint.sloth.jetty;
+package me.icymint.sloth.wechat;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import me.icymint.sloth.jetty.HttpMethods;
 
 import org.eclipse.jetty.http.HttpMethod;
 
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface HttpMethods {
-	/**
-	 * 
-	 * @return the url rule of this method.
-	 */
-	String path();
-
-	/**
-	 * 
-	 * @return the HttpMethod supported by this method.
-	 */
-	HttpMethod[] value() default { HttpMethod.GET };
+/**
+ * @author Daniel Yu
+ */
+public interface WeChatApi {
+	@HttpMethods(path = "", value = { HttpMethod.GET })
+	String get();
 }

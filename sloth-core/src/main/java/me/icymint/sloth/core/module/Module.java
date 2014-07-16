@@ -205,44 +205,6 @@ public final class Module implements AutoCloseable {
 	}
 
 	/**
-	 * Create sub module.
-	 * <p>
-	 * newPlugins stand for the plugin list binding to the sub module, then will
-	 * be created new instances even if the parent Module has the instances of
-	 * them. If PluginA are in the list and PluginB are not, and PluginA
-	 * requires PluginB, then sub Module will search the parent Module to try to
-	 * get the instance of PluginB, if parent Module has no PluginB then sub
-	 * module will create an instance of PluginB.
-	 * <p>
-	 * The returned sub module instance has been initialized, it is ready. Sub
-	 * Module can be closed at any time using {@link #close()}, if not it will
-	 * be closed when the parent module is closing. This means parent module
-	 * will close all the sub module created by it when it is closing.
-	 * 
-	 * @param newPlugins
-	 *            The plugins binding to the sub module.
-	 * @return Sub module instance, it has been initialized and is ready now.
-	 * @throws IllegalStateException
-	 *             If the module is not ready throws the IllegalStateException.
-	 * @throws Exception
-	 *             Create or initialize the sub module error throws the
-	 *             exception.
-	 * @see Plugin
-	 */
-	@SafeVarargs
-	public final Module fork(Class<? extends Plugin>... newPlugins)
-			throws IllegalStateException, Exception {
-		if (!isReady())
-			throw new IllegalStateException();
-		// Create new module instance.
-		Module mc = new Module(this, newPlugins);
-		mc.init();
-		// After being initialized, register it to the parent module.
-		_children.put(mc._id, mc);
-		return mc;
-	}
-
-	/**
 	 * Try to get the instance of specific type of Plugin,if the instance dose
 	 * not exist in the current module, then it will search it's parent module
 	 * until to the top Module. If can not find an instance then it will return
@@ -325,11 +287,41 @@ public final class Module implements AutoCloseable {
 	}
 
 	/**
+	 * Create sub module.
+	 * <p>
+	 * newPlugins stand for the plugin list binding to the sub module, then will
+	 * be created new instances even if the parent Module has the instances of
+	 * them. If PluginA are in the list and PluginB are not, and PluginA
+	 * requires PluginB, then sub Module will search the parent Module to try to
+	 * get the instance of PluginB, if parent Module has no PluginB then sub
+	 * module will create an instance of PluginB.
+	 * <p>
+	 * The returned sub module instance has been initialized, it is ready. Sub
+	 * Module can be closed at any time using {@link #close()}, if not it will
+	 * be closed when the parent module is closing. This means parent module
+	 * will close all the sub module created by it when it is closing.
 	 * 
-	 * @return All the classes of plugins created by this module.
+	 * @param newPlugins
+	 *            The plugins binding to the sub module.
+	 * @return Sub module instance, it has been initialized and is ready now.
+	 * @throws IllegalStateException
+	 *             If the module is not ready throws the IllegalStateException.
+	 * @throws Exception
+	 *             Create or initialize the sub module error throws the
+	 *             exception.
+	 * @see Plugin
 	 */
-	public final Set<Class<? extends Plugin>> plugins() {
-		return _map.keySet();
+	@SafeVarargs
+	public final Module fork(Class<? extends Plugin>... newPlugins)
+			throws IllegalStateException, Exception {
+		if (!isReady())
+			throw new IllegalStateException();
+		// Create new module instance.
+		Module mc = new Module(this, newPlugins);
+		mc.init();
+		// After being initialized, register it to the parent module.
+		_children.put(mc._id, mc);
+		return mc;
 	}
 
 	/**
@@ -505,6 +497,14 @@ public final class Module implements AutoCloseable {
 		// add it to the pool.
 		_map.put(clz, m);
 		return m;
+	}
+
+	/**
+	 * 
+	 * @return All the classes of plugins created by this module.
+	 */
+	public final Set<Class<? extends Plugin>> plugins() {
+		return _map.keySet();
 	}
 
 	/**
