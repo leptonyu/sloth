@@ -9,6 +9,8 @@
 	<description>A Module Model.</description>
 	<modules>
 		<module>sloth-core</module>
+		<module>sloth-jetty</module>
+		<module>sloth-wechat</module>
 	</modules>
 	<licenses>
 		<license>
