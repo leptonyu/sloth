@@ -3,10 +3,10 @@
   <groupId>me.icymint</groupId>
   <artifactId>sloth-parent</artifactId>
   <versioning>
-    <release>0.2</release>
+    <release>0.1-alpha</release>
     <versions>
-      <version>0.2</version>
+      <version>0.1-alpha</version>
     </versions>
-    <lastUpdated>20140717071551</lastUpdated>
+    <lastUpdated>20140717155030</lastUpdated>
   </versioning>
 </metadata>
