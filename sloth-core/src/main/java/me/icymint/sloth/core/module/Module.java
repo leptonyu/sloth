@@ -133,7 +133,7 @@ public final class Module implements AutoCloseable {
 			State.New);
 	private final Deferred _defferred = Deferred.create();
 	private final long _id;
-	private Module _parent = null;
+	private final Module _parent;
 	private final Map<Long, Module> _children = new ConcurrentHashMap<>();
 
 	private ExecutorService _pool;

@@ -7,19 +7,7 @@ Sloth
 **Java Version:** Java 8
 
 ### Use sloth with Maven
-Add the following configuration to your pom.xml:
-
-```xml
-<repositories>
-	<repository>
-		<id>sloth-release</id>
-		<name>Sloth Release</name>
-		<url>https://raw.githubusercontent.com/leptonyu/sloth/releases</url>
-	</repository>
-</repositories>
-```
-
-Then add the following dependency to your pom.xml.
+Add the following dependency to your pom.xml.
 
 ```xml
 <dependency>
@@ -29,25 +17,8 @@ Then add the following dependency to your pom.xml.
 </dependency>
 ```
 
-### Use sloth with Gradle
-Insert in your root project's 'build.gradle' under repositories:
-
-```gradle
-repositories {
-    maven {
-        url 'https://raw.githubusercontent.com/leptonyu/sloth/releases'
-    }
-}
-```
-and in your project folder in the 'build.gradle' under dependencies:
-
-```gradle
-dependencies {
-    compile 'me.icymint:sloth:0.1-alpha'
-}
-```
-
+ 
 ### Download
-[sloth-0.1-alpha Jar](https://raw.githubusercontent.com/leptonyu/sloth/releases/me/icymint/sloth/0.1-alpha/sloth-0.1-alpha.jar)<br>
+[ sloth-0.1-alpha Jar](https://raw.githubusercontent.com/leptonyu/sloth/releases/me/icymint/sloth/0.1-alpha/sloth-0.1-alpha.jar)<br>
 [sloth-0.1-alpha Source](https://raw.githubusercontent.com/leptonyu/sloth/releases/releases/me/icymint/sloth/0.1-alpha/sloth-0.1-alpha-source.jar)<br>
 [sloth-0.1-alpha Javadoc](https://raw.githubusercontent.com/leptonyu/sloth/releases/me/icymint/sloth/0.1-alpha/sloth-0.1-alpha-javadoc.jar)
