@@ -34,5 +34,5 @@ public @interface ContextConfiguration {
 	 * @return relative path of configuration file in the class path, empty
 	 *         value means not to specify the configuration file.
 	 */
-	String path() default "";
+	String value() default "";
 }

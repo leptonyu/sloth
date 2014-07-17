@@ -1,0 +1,3 @@
+jetty:
+  port: 10210
+  api:  /api

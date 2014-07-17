@@ -41,6 +41,14 @@ public abstract class AbstractContext<P> implements Plugin {
 	private P p = null;
 
 	/**
+	 * 
+	 * @return Get the configuration object.
+	 */
+	public P configuration() {
+		return p;
+	}
+
+	/**
 	 * initial the context after create the configuration object.
 	 * 
 	 * @param context
@@ -70,13 +78,13 @@ public abstract class AbstractContext<P> implements Plugin {
 		File configpath = null;
 		P p = null;
 		// Default value means no configuration file.
-		if (!"".equals(ccf.path())) {
-			URL url = getClass().getResource(ccf.path());
+		if (!"".equals(ccf.value())) {
+			URL url = getClass().getResource(ccf.value());
 			if (url == null) {
-				throw new FileNotFoundException(ccf.path());
+				throw new FileNotFoundException(ccf.value());
 			}
 			String f = url.getFile();
-			f = f.substring(0, f.length() - ccf.path().length());
+			f = f.substring(0, f.length() - ccf.value().length());
 			configpath = new File(f).getAbsoluteFile();
 			try (InputStream input = url.openStream()) {
 				p = loadFromStream(input);
@@ -85,14 +93,6 @@ public abstract class AbstractContext<P> implements Plugin {
 		this.p = p;
 		// Next step
 		initAndDefer(provider, deferred, p, configpath);
-	}
-
-	/**
-	 * 
-	 * @return Get the configuration object.
-	 */
-	public P configuration() {
-		return p;
 	}
 
 	/**

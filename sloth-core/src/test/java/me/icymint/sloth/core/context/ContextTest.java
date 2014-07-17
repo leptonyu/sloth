@@ -37,7 +37,7 @@ public class ContextTest {
 
 	}
 
-	@ContextConfiguration(path = "/contextb.properties")
+	@ContextConfiguration("/contextb.properties")
 	public static class ContextB extends AbstractPropertiesContext {
 
 		@Override
