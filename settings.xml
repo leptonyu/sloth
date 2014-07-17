@@ -20,7 +20,7 @@
 			</activation>
 			<properties>
 				<coveralltoken>${env.COVER_ALL_TOKEN}</coveralltoken>
-		        <gpg.executable>gpg2</gpg.executable>
+		        <gpg.executable>gpg</gpg.executable>
 		        <gpg.passphrase>${env.PASS_PHRASE}</gpg.passphrase>
 			</properties>
 		</profile>
