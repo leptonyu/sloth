@@ -109,7 +109,7 @@ public class ModuleTest {
 		System.out.println(abc);
 		abc.init();
 		try {
-			for (int i = 0; i < 100; i++) {
+			for (int i = 0; i < 10; i++) {
 				Module m = abc.fork(PluginD.class);
 				System.out.println(m);
 				if (i % 10 == 0) {
