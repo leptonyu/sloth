@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>me.icymint</groupId>
 		<artifactId>sloth-parent</artifactId>
-		<version>0.2</version>
+		<version>0.3</version>
 	</parent>
 	<artifactId>sloth-jetty</artifactId>
 	<name>Sloth Jetty</name>
