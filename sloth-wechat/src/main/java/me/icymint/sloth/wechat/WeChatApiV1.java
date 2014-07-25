@@ -50,6 +50,12 @@ public class WeChatApiV1 implements WeChatApi {
 		_map.put("secret", conf.getValue("secret").asString(""));
 	}
 
+	@Override
+	@HttpMethods(path = "", value = { HttpMethod.GET })
+	public String get() {
+		return "hello";
+	}
+
 	public void updateAuthority() throws Exception {
 		ObjectNode node = new ObjectMapper()
 				.readValue(new URL(_stp.parse(author, k -> _map.get(k))),
@@ -61,11 +67,5 @@ public class WeChatApiV1 implements WeChatApi {
 			return;
 		}
 		throw new Exception();
-	}
-
-	@Override
-	@HttpMethods(path = "", value = { HttpMethod.GET })
-	public String get() {
-		return "hello";
 	}
 }

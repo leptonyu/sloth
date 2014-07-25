@@ -73,6 +73,14 @@ public class JsonObject {
 
 	/**
 	 * 
+	 * @return the list of JsonObject.
+	 */
+	public List<JsonObject> asList() {
+		return _list != null ? _list : new LinkedList<>();
+	}
+
+	/**
+	 * 
 	 * @return read the wrapped object as Long integer.
 	 * @throws NumberFormatException
 	 *             the wrapped object is not a Long integer type throws
@@ -210,13 +218,6 @@ public class JsonObject {
 		return _map != null ? _map.get(key) : null;
 	}
 
-	private <T> T source(Class<T> clazz) {
-		if (_source != null && clazz != null && clazz.isInstance(_source)) {
-			return clazz.cast(_source);
-		}
-		return null;
-	}
-
 	/**
 	 * 
 	 * @return if keys of the wrapped Map, if it is not map then return a empty
@@ -226,11 +227,10 @@ public class JsonObject {
 		return _map != null ? _map.keySet() : new HashSet<>();
 	}
 
-	/**
-	 * 
-	 * @return the list of JsonObject.
-	 */
-	public List<JsonObject> asList() {
-		return _list != null ? _list : new LinkedList<>();
+	private <T> T source(Class<T> clazz) {
+		if (_source != null && clazz != null && clazz.isInstance(_source)) {
+			return clazz.cast(_source);
+		}
+		return null;
 	}
 }

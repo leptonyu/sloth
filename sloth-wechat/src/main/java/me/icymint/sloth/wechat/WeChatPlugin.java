@@ -50,6 +50,10 @@ public class WeChatPlugin implements Plugin {
 	private QueryRunner _dbutil;
 	private JettyPlugin jp;
 
+	public QueryRunner dbutil() {
+		return _dbutil;
+	}
+
 	@SuppressWarnings("unchecked")
 	public <V extends Object> Cache<String, V> getCache(String name) {
 		Cache<String, ?> cache = _map.get(name);
@@ -69,10 +73,6 @@ public class WeChatPlugin implements Plugin {
 		}
 	}
 
-	public QueryRunner dbutil() {
-		return _dbutil;
-	}
-
 	public JettyPlugin getContext() {
 		return jp;
 	}
@@ -87,16 +87,6 @@ public class WeChatPlugin implements Plugin {
 		} catch (Exception e) {
 			return null;
 		}
-	}
-
-	public void setOption(String key, String value) throws SQLException {
-		try {
-			dbutil().update("insert into commons values(?,?)", key, value);
-		} catch (SQLException e) {
-			dbutil().update("update commons set value=? where key=?", value,
-					key);
-		}
-		getCache("commons").put(key, value);
 	}
 
 	@Override
@@ -175,5 +165,15 @@ public class WeChatPlugin implements Plugin {
 		}
 		WeChatControl wcc = new WeChatControl(this, jp, module);
 		wcc.setId(jp.register(0, wcc));
+	}
+
+	public void setOption(String key, String value) throws SQLException {
+		try {
+			dbutil().update("insert into commons values(?,?)", key, value);
+		} catch (SQLException e) {
+			dbutil().update("update commons set value=? where key=?", value,
+					key);
+		}
+		getCache("commons").put(key, value);
 	}
 }

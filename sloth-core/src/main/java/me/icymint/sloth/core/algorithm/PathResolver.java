@@ -16,38 +16,22 @@
 package me.icymint.sloth.core.algorithm;
 
 /**
- * Point to stand for a point in the map.
  * 
  * @author Daniel
  *
  */
-public class Point {
-	public final int x;
-	public final int y;
+@FunctionalInterface
+public interface PathResolver {
+	PathResolver DEFAULT = (p, dest) -> Math.abs(dest.x - p.x)
+			+ Math.abs(dest.y - p.y);
 
-	public Point(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Point) {
-			Point pt = (Point) obj;
-			return (x == pt.x) && (y == pt.y);
-		}
-		return super.equals(obj);
-	}
-
-	@Override
-	public int hashCode() {
-		long bits = java.lang.Double.doubleToLongBits(x);
-		bits ^= java.lang.Double.doubleToLongBits(y) * 31;
-		return (((int) bits) ^ ((int) (bits >> 32)));
-	}
-
-	@Override
-	public String toString() {
-		return "[x=" + x + ",y=" + y + "]";
-	}
+	/**
+	 * 
+	 * @param now
+	 *            start point
+	 * @param dest
+	 *            dest point
+	 * @return estimate of the shortest path of two point.
+	 */
+	int resolve(Point now, Point dest);
 }

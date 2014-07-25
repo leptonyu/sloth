@@ -25,14 +25,14 @@ public class WeChatControl {
 		_module = module;
 	}
 
-	void setId(long id) {
-		_id = id;
-	}
-
 	@HttpMethods(path = "/restart", value = { HttpMethod.PUT })
 	public void restart() {
 		_jetty.unregister(_id);
 		WeChatControl wcc = new WeChatControl(_wechat, _jetty, _module);
 		wcc.setId(_jetty.register(0, wcc));
+	}
+
+	void setId(long id) {
+		_id = id;
 	}
 }

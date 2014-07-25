@@ -15,39 +15,31 @@
  */
 package me.icymint.sloth.core.algorithm;
 
+import me.icymint.sloth.core.algorithm.AStar.Adder;
+
 /**
- * Point to stand for a point in the map.
  * 
  * @author Daniel
  *
  */
-public class Point {
-	public final int x;
-	public final int y;
+@FunctionalInterface
+public interface MoveResolver {
+	/**
+	 * origin point can move up, down, left and right.
+	 */
+	MoveResolver DEFAULT = (d) -> d.add(1, 0).add(-1, 0).add(0, 1).add(0, -1);
+	/**
+	 * origin point can move up, down, left, right and to the four corners.
+	 */
+	MoveResolver CROSS = (d) -> DEFAULT.path(d.add(1, 1).add(-1, 1).add(1, -1)
+			.add(-1, -1));
 
-	public Point(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Point) {
-			Point pt = (Point) obj;
-			return (x == pt.x) && (y == pt.y);
-		}
-		return super.equals(obj);
-	}
-
-	@Override
-	public int hashCode() {
-		long bits = java.lang.Double.doubleToLongBits(x);
-		bits ^= java.lang.Double.doubleToLongBits(y) * 31;
-		return (((int) bits) ^ ((int) (bits >> 32)));
-	}
-
-	@Override
-	public String toString() {
-		return "[x=" + x + ",y=" + y + "]";
-	}
+	/**
+	 * Define the list of points from origin point can move to next.
+	 * 
+	 * @param adder
+	 *            a container to check this points.
+	 * @return Adder itself.
+	 */
+	Adder path(Adder adder);
 }

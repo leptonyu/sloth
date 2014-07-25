@@ -106,17 +106,6 @@ public class HandlerProvider {
 		return _id;
 	}
 
-	public boolean inserts(String path, HttpMethod[] methods, SimpleHandler sh) {
-		if (methods != null) {
-			boolean flag = true;
-			for (HttpMethod method : methods) {
-				flag = insert(path, method, sh) && flag;
-			}
-			return flag;
-		}
-		return false;
-	}
-
 	public boolean insert(String path, HttpMethod method, SimpleHandler sh) {
 		// System.out.println(name() + "<<" + method + "<<" + sh);
 		if (null == path || "".equals(path) || "/".equals(path)) {
@@ -130,6 +119,17 @@ public class HandlerProvider {
 				return false;
 			}
 			return fork(name).insert(abc.group(2), method, sh);
+		}
+		return false;
+	}
+
+	public boolean inserts(String path, HttpMethod[] methods, SimpleHandler sh) {
+		if (methods != null) {
+			boolean flag = true;
+			for (HttpMethod method : methods) {
+				flag = insert(path, method, sh) && flag;
+			}
+			return flag;
 		}
 		return false;
 	}
