@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.icymint.sloth.core.algorithm;
+package me.icymint.sloth.core.alg;
 
 /**
  * Point to stand for a point in the map.
