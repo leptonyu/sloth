@@ -1,8 +1,11 @@
 package me.icymint.sloth.core.alg;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -10,8 +13,8 @@ import org.junit.Test;
 
 public class ASTest {
 
-	String[] MAPS = new String[] { "/map.dat", "/map3.dat", "/nomap.dat",
-			"/empty.dat", "/slide.dat", "/middle.dat", "/tough.dat" };
+	String[] MAPS = new String[] { "map", "map3", "nomap", "empty", "slide",
+			"middle", "tough" };
 
 	public class MapArea implements Area {
 		private final char[][] map = new char[24][80];
@@ -19,14 +22,26 @@ public class ASTest {
 		private final Point end;
 		private final Mover mover;
 		private final LongAdder adder = new LongAdder();
+		private final String name;
+		private final File file;
 
 		public MapArea(String mappath, Mover move) throws IOException {
+			name = mappath;
+			File file = new File("target/" + name + ".play");
+			int k = 1;
+			while (file.exists()) {
+				file = new File("target/" + name + (k++) + ".play");
+			}
+			file.createNewFile();
+			this.file = file;
 			try (BufferedReader input = new BufferedReader(
 					new InputStreamReader(getClass().getResourceAsStream(
-							mappath)))) {
+							"/" + mappath + ".dat")))) {
 				String line = null;
 				int i = 0;
 				while ((line = input.readLine()) != null) {
+					Files.write(file.toPath(), (line + "\n").getBytes(),
+							StandardOpenOption.APPEND);
 					map[i++] = line.toCharArray();
 				}
 			}
@@ -62,6 +77,7 @@ public class ASTest {
 			}
 			paintAll();
 			System.out.println(adder.sum() + ":" + i);
+
 		}
 
 		@Override
@@ -69,14 +85,20 @@ public class ASTest {
 			adder.increment();
 			char x = map[p.x][p.y];
 			if (x != 'e' && x != 's') {
+				char change = ' ';
 				if (t == Type.CLOSE) {
-					map[p.x][p.y] = '!';
+					change = '!';
 				} else if (t == Type.OPEN) {
-					map[p.x][p.y] = '?';
+					change = '?';
 				} else if (t == Type.PATH) {
-					map[p.x][p.y] = '*';
-				} else {
-					map[p.x][p.y] = ' ';
+					change = '*';
+				}
+				map[p.x][p.y] = change;
+				try {
+					Files.write(file.toPath(),
+							(p.x + "," + p.y + "," + change + "\n").getBytes(),
+							StandardOpenOption.APPEND);
+				} catch (IOException e) {
 				}
 			}
 		}
