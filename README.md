@@ -13,6 +13,36 @@ Add the following dependency to your pom.xml.
 <dependency>
 	<groupId>me.icymint</groupId>
 	<artifactId>sloth-core</artifactId>
-	<version>0.13</version>
+	<version>0.3</version>
 </dependency>
+```
+
+
+### Deferred utility
+The Deferred object is inspired by the Golang keyword **defer**. 
+It collects operations need to execute and use Deferred#close() to execute all of them.
+
+```java
+	Deferred df=Deferred.create();
+	try{
+		// Here to add the DeferredOpration to df.
+		// For example:
+		ExecutorService pool=Executors.newSingleThreadPool();
+		df.defer(pool::shutdown);
+		// next, use the pool.
+		pool.submit(()->System.out.println("Hello"));
+	}finally{
+		df.close();
+	}
+```
+try-with usage:
+```java
+	try(Deferred df=Deffered.create()){
+		// Here to add the DeferredOpration to df.
+		// For example:
+		ExecutorService pool=Executors.newSingleThreadPool();
+		df.defer(pool::shutdown);
+		// next, use the pool.
+		pool.submit(()->System.out.println("Hello"));
+	}
 ```

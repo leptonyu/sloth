@@ -24,10 +24,10 @@ public class DeferredTest {
 	public void deferTest() throws Exception {
 		long start = System.currentTimeMillis();
 		for (int i = 0; i < 10000; i++) {
-			Deferred defer = Deferred.create();
-			defer.defer(() -> {
-			});
-			defer.close();
+			try (Deferred defer = Deferred.create()) {
+				defer.defer(() -> {
+				});
+			}
 		}
 		System.out.println((System.currentTimeMillis() - start) + "ms");
 	}
