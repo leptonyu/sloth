@@ -13,37 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.icymint.sloth.core.alg;
+package me.icymint.sloth.core.deferred;
 
-/**
- * Area
- * 
- * @author Daniel
- *
- */
-@FunctionalInterface
-public interface Area {
-	enum Type {
-		NULL, OPEN, CLOSE, PATH;
-	}
+import me.icymint.sloth.core.defer.Deferred;
 
-	/**
-	 * if the specific point in the area is open.
-	 * 
-	 * @param p
-	 *            the specific point.
-	 * @return true stand for the point is open, otherwise return false.
-	 */
-	boolean isOpen(Point p);
+import org.junit.Test;
 
-	/**
-	 * Paint the point when type changes to new one.
-	 * 
-	 * @param p
-	 *            the specific point.
-	 * @param become
-	 *            new type.
-	 */
-	default void paint(Point p, Type become) {
+public class DeferredTest {
+	@Test
+	public void deferTest() throws Exception {
+		long start = System.currentTimeMillis();
+		for (int i = 0; i < 10000; i++) {
+			Deferred defer = Deferred.create();
+			defer.defer(() -> {
+			});
+			defer.close();
+		}
+		System.out.println((System.currentTimeMillis() - start) + "ms");
 	}
 }

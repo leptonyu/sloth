@@ -15,7 +15,6 @@
  */
 package me.icymint.sloth.core.defer;
 
-import java.util.EmptyStackException;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -51,21 +50,18 @@ public final class Deferred implements AutoCloseable {
 	@Override
 	public void close() throws Exception {
 		if (_shutdown.compareAndSet(false, true)) {
-			Exception ex = new Exception();
-			while (true) {
-				DeferredOperation oper = null;
+			Exception ex = null;
+			while (!_stack.isEmpty()) {
 				try {
-					oper = _stack.pop();
-				} catch (EmptyStackException e) {
-					break;
-				}
-				try {
-					oper.execute();
+					_stack.pop().execute();
 				} catch (Exception e) {
+					if (ex == null) {
+						ex = new Exception();
+					}
 					ex.addSuppressed(e);
 				}
 			}
-			if (ex.getSuppressed().length > 0)
+			if (ex != null)
 				throw ex;
 		}
 	}

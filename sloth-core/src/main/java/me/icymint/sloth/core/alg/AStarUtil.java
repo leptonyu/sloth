@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2014 Daniel Yu
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package me.icymint.sloth.core.alg;
 
 import java.util.HashMap;
@@ -5,7 +20,13 @@ import java.util.Map;
 
 import me.icymint.sloth.core.alg.Area.Type;
 
-public class AS {
+/**
+ * An A-* algorithm implementation.
+ * 
+ * @author Daniel
+ *
+ */
+public class AStarUtil {
 
 	public static Cell search(Point start, Point end, Area area) {
 		return search(start, end, area, Mover.DEFAULT);
@@ -15,6 +36,19 @@ public class AS {
 		return search(start, end, area, Mover.CROSS);
 	}
 
+	/**
+	 * Search the shortest path between two points in the area.
+	 * 
+	 * @param start
+	 *            the start point.
+	 * @param end
+	 *            the end point.
+	 * @param area
+	 *            the area need to search.
+	 * @param move
+	 *            define the way how to move from one point to another.
+	 * @return find the Cell which contains the end point or null.
+	 */
 	public static Cell search(Point start, Point end, Area area, Mover move) {
 		if (start == null || end == null || area == null || !area.isOpen(start)
 				|| !area.isOpen(end)) {
