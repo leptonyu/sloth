@@ -18,8 +18,9 @@ package me.icymint.sloth.wechat;
 import java.net.URL;
 import java.util.Map;
 
+import javax.json.JsonObject;
+
 import jodd.util.StringTemplateParser;
-import me.icymint.sloth.core.json.JsonObject;
 import me.icymint.sloth.jetty.HttpMethods;
 import me.icymint.sloth.jetty.HttpSupport;
 
@@ -43,11 +44,11 @@ public class WeChatApiV1 implements WeChatApi {
 	public WeChatApiV1(WeChatPlugin wechat) {
 		_wechat = wechat;
 		JsonObject conf = _wechat.getContext().configuration()
-				.getValue("wechat");
+				.getJsonObject("wechat");
 		_map = Maps.newConcurrentMap();
-		_map.put("grant_type", conf.getValue("grant_type").asString(""));
-		_map.put("appid", conf.getValue("appid").asString());
-		_map.put("secret", conf.getValue("secret").asString(""));
+		_map.put("grant_type", conf.getString("grant_type", ""));
+		_map.put("appid", conf.getString("appid"));
+		_map.put("secret", conf.getString("secret", ""));
 	}
 
 	@Override

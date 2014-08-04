@@ -73,7 +73,7 @@ public abstract class AbstractContext<P> implements Plugin {
 		ContextConfiguration ccf = getClass().getDeclaredAnnotation(
 				ContextConfiguration.class);
 		if (ccf == null) {
-			throw new ContextAnnotationNofFound(getClass().getName());
+			throw new ContextAnnotationNotFound(getClass().getName());
 		}
 		File configpath = null;
 		P p = null;

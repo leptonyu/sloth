@@ -18,7 +18,8 @@ package me.icymint.sloth.jetty;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import me.icymint.sloth.core.json.JsonObject;
+import javax.json.JsonObject;
+
 import me.icymint.sloth.core.module.Module;
 
 import org.junit.Assert;
@@ -66,10 +67,9 @@ public class JettyTest {
 		try {
 			JettyPlugin jp = module.fetch(JettyPlugin.class);
 			long id = jp.register(1, new HelloWorld());
-			JsonObject config = jp.configuration().getValue("jetty");
-			String baseurl = "http://127.0.0.1:"
-					+ config.getValue("port").asInt(8080)
-					+ config.getValue("api").asString("/api");
+			JsonObject config = jp.configuration().getJsonObject("jetty");
+			String baseurl = "http://127.0.0.1:" + config.getInt("port", 8080)
+					+ config.getString("api", "/api");
 			String abc = Resources.toString(new URL(baseurl + "/hello"),
 					Charset.forName("UTF-8"));
 			Assert.assertEquals(Hello, abc);

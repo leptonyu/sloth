@@ -18,13 +18,16 @@ package me.icymint.sloth.wechat;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
+
 import jodd.util.StringTemplateParser;
 import me.icymint.sloth.core.defer.Deferred;
-import me.icymint.sloth.core.json.JsonObject;
 import me.icymint.sloth.core.module.Module;
 import me.icymint.sloth.core.module.Plugin;
 import me.icymint.sloth.core.module.RequirePlugins;
@@ -93,7 +96,7 @@ public class WeChatPlugin implements Plugin {
 	public void initAndDeferClose(Module module, Deferred deferred)
 			throws Exception {
 		jp = module.fetch(JettyPlugin.class);
-		JsonObject db = jp.configuration().getValue("database");
+		JsonObject db = jp.configuration().getJsonObject("database");
 		File dbfolder = new File(jp.getBaseDirectory(), "db");
 		File dbfile = new File(dbfolder, "wechat");
 		boolean init = !dbfolder.exists();
@@ -103,68 +106,93 @@ public class WeChatPlugin implements Plugin {
 		map.put("base", jp.getBaseDirectory().getAbsolutePath());
 		map.put("db", dbfile.getAbsolutePath());
 		StringTemplateParser stp = new StringTemplateParser();
-		ds.setDriverClass(db.getValue("driver").asString("org.h2.Driver"));
-		String url = stp
-				.parse(db.getValue("url").asString(
-						"jdbc:h2:" + dbfile.getAbsolutePath()), k -> map.get(k));
+		ds.setDriverClass(db.getString("driver", "org.h2.Driver"));
+		String url = stp.parse(
+				db.getString("url", "jdbc:h2:" + dbfile.getAbsolutePath()),
+				k -> map.get(k));
 		System.out.println(url);
 		ds.setJdbcUrl(url);
 		deferred.defer(ds::close);
 		_dbutil = new QueryRunner(ds);
 		if (init) {
 			dbfolder.mkdirs();
-			JsonObject crt = db.getValue("create");
+			JsonObject crt = db.getJsonObject("create");
 			if (crt != null) {
-				for (String name : crt.keys()) {
-					JsonObject table = crt.getValue(name);
-					JsonObject vars = table.getValue("vars");
+				for (String name : crt.keySet()) {
+					JsonObject table = crt.getJsonObject(name);
+					JsonObject vars = table.getJsonObject("vars");
 					String sql = null;
-					for (String var : vars.keys()) {
+					for (String var : vars.keySet()) {
 						if (sql == null) {
 							sql = "";
 						} else {
 							sql += ",";
 						}
-						sql += var + " " + vars.getValue(var).asString();
+						sql += var + " " + vars.getString(var);
 					}
-					JsonObject keys = table.getValue("keys");
-					if (keys != null)
+					JsonArray keys = table.getJsonArray("keys");
+					if (keys != null) {
 						sql += ", PRIMARY KEY ("
-								+ Joiner.on(",").join(
-										Lists.transform(keys.asList(),
-												jo -> jo.asString())) + ") ";
-					JsonObject fkeys = table.getValue("fkeys");
+								+ Joiner.on(",")
+										.join(Lists.transform(
+												Lists.newArrayList(parse(keys)),
+												jo -> jo.toString())) + ") ";
+					}
+					JsonObject fkeys = table.getJsonObject("fkeys");
 					if (fkeys != null)
-						for (String fk : fkeys.keys()) {
+						for (String fk : fkeys.keySet()) {
 							sql += ","
 									+ String.format(
 											"FOREIGN KEY (%s) REFERENCES %s ON DELETE CASCADE ON UPDATE CASCADE",
-											fk, fkeys.getValue(fk).asString());
+											fk, fkeys.getString(fk));
 						}
 					sql = String.format("create table %s (%s)", name, sql);
 					System.out.println(sql);
 					_dbutil.update(sql);
 				}
 			}
-			JsonObject ist = db.getValue("insert");
+			JsonObject ist = db.getJsonObject("insert");
 			if (ist != null) {
-				for (String name : ist.keys()) {
-					for (JsonObject data : ist.getValue(name).asList()) {
-						List<Object> line = Lists.transform(data.asList(),
-								d -> d.asObject());
+				for (String name : ist.keySet()) {
+					for (JsonValue data : ist.getJsonArray(name)) {
+						JsonArray ja = JsonArray.class.cast(data);
+						int size = ja.size();
+						String xx = null;
+						for (int i = 0; i < size; i++) {
+							if (xx == null) {
+								xx = "?";
+							} else {
+								xx += ",?";
+							}
+						}
 						String sql = String.format(
-								"INSERT INTO %s VALUES (%s)",
-								name,
-								Joiner.on(",").join(
-										Lists.transform(line, o -> "?")));
+								"INSERT INTO %s VALUES (%s)", name, xx);
 						System.out.println(sql);
-						_dbutil.update(sql, line.toArray());
+						_dbutil.update(sql, parse(ja));
 					}
 				}
 			}
 		}
 		WeChatControl wcc = new WeChatControl(this, jp, module);
 		wcc.setId(jp.register(0, wcc));
+	}
+
+	private Object[] parse(JsonArray ja) {
+		int size = ja.size();
+		Object[] al = new Object[size];
+		for (int i = 0; i < size; i++) {
+			JsonValue jo = ja.get(i);
+			if (jo.getValueType() == ValueType.NUMBER) {
+				al[i] = ja.getInt(i);
+			} else if (jo.getValueType() == ValueType.STRING) {
+				al[i] = ja.getString(i);
+			} else if (jo.getValueType() == ValueType.TRUE) {
+				al[i] = true;
+			} else if (jo.getValueType() == ValueType.FALSE) {
+				al[i] = false;
+			}
+		}
+		return al;
 	}
 
 	public void setOption(String key, String value) throws SQLException {

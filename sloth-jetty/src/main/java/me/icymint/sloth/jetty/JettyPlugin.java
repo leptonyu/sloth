@@ -21,11 +21,18 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,7 +40,6 @@ import javax.servlet.http.HttpServletResponse;
 import me.icymint.sloth.core.context.AbstractContext;
 import me.icymint.sloth.core.context.ContextConfiguration;
 import me.icymint.sloth.core.defer.Deferred;
-import me.icymint.sloth.core.json.JsonObject;
 import me.icymint.sloth.core.module.Module;
 
 import org.eclipse.jetty.http.HttpMethod;
@@ -271,11 +277,11 @@ public class JettyPlugin extends AbstractContext<JsonObject> {
 		_base = Objects.requireNonNull(configpath).getParentFile();
 		_conf = new File(_base, "conf");
 		_web = new File(_base, "web");
-		JsonObject jetty = config.getValue("jetty");
-		Server server = new Server(jetty.getValue("port").asInt(8080));
+		JsonObject jetty = config.getJsonObject("jetty");
+		Server server = new Server(jetty.getInt("port", 8080));
 		ContextHandler handler = new ContextHandler();
 		handler.setBaseResource(Resource.newResource(getWebDirectory()));
-		_mainhandler = new MainHandler(jetty.getValue("api").asString("/api"));
+		_mainhandler = new MainHandler(jetty.getString("api", "/api"));
 		handler.setHandler(_mainhandler);
 		server.setHandler(handler);
 		server.start();
@@ -284,7 +290,45 @@ public class JettyPlugin extends AbstractContext<JsonObject> {
 
 	@Override
 	protected JsonObject loadFromStream(InputStream input) throws IOException {
-		return new JsonObject(new Yaml().load(input));
+		return (JsonObject) xxx(new Yaml().load(input));
+	}
+
+	private Object xxx(Object obj) {
+		if (obj instanceof List) {
+			JsonArrayBuilder ja = Json.createArrayBuilder();
+			for (Object o : List.class.cast(obj)) {
+				o = xxx(o);
+				if (o instanceof JsonValue) {
+					ja.add((JsonValue) o);
+				} else if (o instanceof Boolean) {
+					ja.add((boolean) o);
+				} else if (o instanceof Integer) {
+					ja.add((int) o);
+				} else {
+					ja.add(o.toString());
+				}
+			}
+			return ja.build();
+		} else if (obj instanceof Map) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> yaml = Map.class.cast(obj);
+			JsonObjectBuilder jo = Json.createObjectBuilder();
+			for (String key : yaml.keySet()) {
+				Object o = xxx(yaml.get(key));
+				if (o instanceof JsonValue) {
+					jo.add(key, (JsonValue) o);
+				} else if (o instanceof Boolean) {
+					jo.add(key, (boolean) o);
+				} else if (o instanceof Integer) {
+					jo.add(key, (int) o);
+				} else {
+					jo.add(key, o.toString());
+				}
+			}
+			return jo.build();
+		} else {
+			return obj;
+		}
 	}
 
 	/**

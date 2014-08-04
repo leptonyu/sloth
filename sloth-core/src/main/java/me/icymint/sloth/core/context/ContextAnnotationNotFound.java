@@ -13,4 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.icymint.sloth.core.json;
+package me.icymint.sloth.core.context;
+
+public class ContextAnnotationNotFound extends Exception {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1257448520556231638L;
+
+	public ContextAnnotationNotFound(String name) {
+		super(String.format("Annotation %s NOT found in class %s!",
+				ContextConfiguration.class.getName(), name));
+	}
+
+}
