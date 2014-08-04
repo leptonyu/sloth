@@ -1,0 +1,12 @@
+import hello.xxx
+
+abc{
+	def xxx
+}
+
+a="cc\n  dd"
+b="\042oo\042\x2A\x2b"
+
+if a>b{
+xxx=1
+}

@@ -293,6 +293,32 @@ public class JettyPlugin extends AbstractContext<JsonObject> {
 		return (JsonObject) xxx(new Yaml().load(input));
 	}
 
+	/**
+	 * Parse the target object to create a {@link HandlerProvider}.
+	 * 
+	 * @param priority
+	 *            Priority the new {@link HandlerProvider}, dispatcher will use
+	 *            the priority to determine which {@link HandlerProvider} should
+	 *            be searched first.
+	 * @param object
+	 *            target object.
+	 * @return the unique id of the {@link HandlerProvider}, and this id can be
+	 *         use for unregister the {@link HandlerProvider}.
+	 */
+	public long register(int priority, Object object) {
+		return _mainhandler.register(priority, object);
+	}
+
+	/**
+	 * unregister the {@link HandlerProvider} with the given id.
+	 * 
+	 * @param id
+	 *            the id of {@link HandlerProvider} needed to be removed.
+	 */
+	public void unregister(long id) {
+		_mainhandler.unregister(id);
+	}
+
 	private Object xxx(Object obj) {
 		if (obj instanceof List) {
 			JsonArrayBuilder ja = Json.createArrayBuilder();
@@ -329,32 +355,6 @@ public class JettyPlugin extends AbstractContext<JsonObject> {
 		} else {
 			return obj;
 		}
-	}
-
-	/**
-	 * Parse the target object to create a {@link HandlerProvider}.
-	 * 
-	 * @param priority
-	 *            Priority the new {@link HandlerProvider}, dispatcher will use
-	 *            the priority to determine which {@link HandlerProvider} should
-	 *            be searched first.
-	 * @param object
-	 *            target object.
-	 * @return the unique id of the {@link HandlerProvider}, and this id can be
-	 *         use for unregister the {@link HandlerProvider}.
-	 */
-	public long register(int priority, Object object) {
-		return _mainhandler.register(priority, object);
-	}
-
-	/**
-	 * unregister the {@link HandlerProvider} with the given id.
-	 * 
-	 * @param id
-	 *            the id of {@link HandlerProvider} needed to be removed.
-	 */
-	public void unregister(long id) {
-		_mainhandler.unregister(id);
 	}
 
 }

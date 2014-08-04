@@ -32,10 +32,6 @@ public class AStarUtil {
 		return search(start, end, area, Mover.DEFAULT);
 	}
 
-	public static Cell searchCross(Point start, Point end, Area area) {
-		return search(start, end, area, Mover.CROSS);
-	}
-
 	/**
 	 * Search the shortest path between two points in the area.
 	 * 
@@ -93,5 +89,9 @@ public class AStarUtil {
 				now = small;
 		}
 		return close.get(end);
+	}
+
+	public static Cell searchCross(Point start, Point end, Area area) {
+		return search(start, end, area, Mover.CROSS);
 	}
 }

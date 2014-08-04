@@ -28,9 +28,6 @@ import org.junit.Test;
 
 public class ASTest {
 
-	String[] MAPS = new String[] { "map", "map3", "nomap", "empty", "slide",
-			"middle", "tough" };
-
 	public class MapArea implements Area {
 		private final char[][] map = new char[24][80];
 		private final Point start;
@@ -126,6 +123,9 @@ public class ASTest {
 		}
 
 	}
+
+	String[] MAPS = new String[] { "map", "map3", "nomap", "empty", "slide",
+			"middle", "tough" };
 
 	public void mapTest(String mappath, Mover mover) throws IOException {
 		new MapArea(mappath, mover).paint();

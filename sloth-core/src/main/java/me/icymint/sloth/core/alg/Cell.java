@@ -47,18 +47,9 @@ public class Cell implements Comparable<Cell> {
 		delta = (parent != null) ? (dx * parent.x + dy * parent.y) : 0;
 	}
 
-	public Cell getParent() {
-		return parent;
-	}
-
-	public Point getLocation() {
-		return point;
-	}
-
 	@Override
-	public String toString() {
-		return "[step=" + g + ": x=" + getLocation().x + ",y="
-				+ getLocation().y + "]";
+	public int compareTo(Cell next) {
+		return f - next.f;
 	}
 
 	@Override
@@ -69,9 +60,18 @@ public class Cell implements Comparable<Cell> {
 		return super.equals(o);
 	}
 
+	public Point getLocation() {
+		return point;
+	}
+
+	public Cell getParent() {
+		return parent;
+	}
+
 	@Override
-	public int compareTo(Cell next) {
-		return f - next.f;
+	public String toString() {
+		return "[step=" + g + ": x=" + getLocation().x + ",y="
+				+ getLocation().y + "]";
 	}
 
 }
