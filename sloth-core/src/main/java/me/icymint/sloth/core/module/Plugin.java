@@ -15,7 +15,7 @@
  */
 package me.icymint.sloth.core.module;
 
-import me.icymint.sloth.core.defer.Deferred;
+import me.icymint.sloth.Deferred;
 
 /**
  * Standard plugin, the implementation of this interface must follow the

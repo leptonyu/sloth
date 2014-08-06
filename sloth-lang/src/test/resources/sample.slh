@@ -1,12 +1,15 @@
-import hello.xxx
-
-abc{
-	def xxx
+while abc>0 {
+	print(abc)
 }
 
-a="cc\n  dd"
-b="\042oo\042\x2A\x2b"
-
-if a>b{
-xxx=1
+if abc ==0{
+}else if abc>0{
+}else{
+xx="x\042"
+yy='oo"'
+zz=9999
+aa=0x99
+bb=077
+cc=0b111
+dd=099
 }

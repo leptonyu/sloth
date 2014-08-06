@@ -15,7 +15,7 @@
  */
 package me.icymint.sloth.core.module;
 
-import me.icymint.sloth.core.defer.Deferred;
+import me.icymint.sloth.Deferred;
 
 import org.junit.Assert;
 import org.junit.Test;

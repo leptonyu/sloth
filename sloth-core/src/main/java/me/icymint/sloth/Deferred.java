@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.icymint.sloth.core.defer;
+package me.icymint.sloth;
 
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;

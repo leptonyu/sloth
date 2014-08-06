@@ -13,22 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.icymint.sloth.core.deferred;
-
-import me.icymint.sloth.core.defer.Deferred;
-
-import org.junit.Test;
-
-public class DeferredTest {
-	@Test
-	public void deferTest() throws Exception {
-		long start = System.currentTimeMillis();
-		for (int i = 0; i < 10000; i++) {
-			try (Deferred defer = Deferred.create()) {
-				defer.defer(() -> {
-				});
-			}
-		}
-		System.out.println((System.currentTimeMillis() - start) + "ms");
-	}
-}
+package me.icymint.sloth;

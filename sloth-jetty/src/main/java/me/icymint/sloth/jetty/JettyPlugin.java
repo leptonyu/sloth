@@ -37,9 +37,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import me.icymint.sloth.Deferred;
 import me.icymint.sloth.core.context.AbstractContext;
 import me.icymint.sloth.core.context.ContextConfiguration;
-import me.icymint.sloth.core.defer.Deferred;
 import me.icymint.sloth.core.module.Module;
 
 import org.eclipse.jetty.http.HttpMethod;

@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.icymint.sloth.core.defer;
+package me.icymint.sloth;
 
-/**
- * Deferred operation needs to be executed later.
- * 
- * @author Daniel
- *
- */
-@FunctionalInterface
-public interface DeferredOperation {
-	/**
-	 * Implements the detailed operation.
-	 * 
-	 * @throws Exception
-	 *             execute error then throws exception.
-	 */
-	void execute() throws Exception;
+import org.junit.Test;
+
+public class DeferredTest {
+	@Test
+	public void deferTest() throws Exception {
+		long start = System.currentTimeMillis();
+		for (int i = 0; i < 10000; i++) {
+			try (Deferred defer = Deferred.create()) {
+				defer.defer(() -> {
+				});
+			}
+		}
+		System.out.println((System.currentTimeMillis() - start) + "ms");
+	}
 }

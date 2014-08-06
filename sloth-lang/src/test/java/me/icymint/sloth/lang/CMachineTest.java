@@ -6,12 +6,18 @@ import java.nio.charset.Charset;
 import org.junit.Test;
 
 public class CMachineTest {
+
 	@Test
 	public void mTest() throws IOException {
-		Machine<String, Character> ch = Machine.WORD_MACHINE;
-		for (String t : ch.load(Reader.newReader(getClass()
-				.getResourceAsStream("/sample.slh"), Charset.forName("UTF-8")))) {
-			System.out.println(t);
+		Machine<Object> ch = Machine.WORD_MACHINE;
+		for (Value<Object> t : ch.load(
+				CharReader.newReader(
+						getClass().getResourceAsStream("/sample.slh"),
+						Charset.forName("UTF-8")), 1)) {
+			if (Identifier.valueOf(t) == null)
+				System.out.println(t.getLine() + ":"
+						+ t.getValue().getClass().getSimpleName() + ":"
+						+ t.getValue());
 		}
 	}
 }

@@ -28,6 +28,7 @@ public class Mover implements Metric {
 	public final static Mover[] values() {
 		return vs;
 	}
+
 	public static final Mover DEFAULT = new Mover(Metric.DEFAULT).add(1, 0)
 			.add(-1, 0).add(0, 1).add(0, -1);
 	public static final Mover CROSS = new Mover(Metric.DEFAULT).add(1, 0)

@@ -18,7 +18,7 @@ package me.icymint.sloth.core.context;
 import java.io.File;
 import java.util.Properties;
 
-import me.icymint.sloth.core.defer.Deferred;
+import me.icymint.sloth.Deferred;
 import me.icymint.sloth.core.module.Module;
 
 import org.junit.Assert;

@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-import me.icymint.sloth.core.defer.Deferred;
+import me.icymint.sloth.Deferred;
 
 /**
  * A multifurcating tree to manage the plugins and their required plugins. A

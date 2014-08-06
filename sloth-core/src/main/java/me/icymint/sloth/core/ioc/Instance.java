@@ -37,7 +37,6 @@ public final class Instance {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <E, T extends E> E create(Class<T> clzz, Object... params)
 			throws InstantiationException {
 		InstantiationException ex = new InstantiationException(clzz.getName());
@@ -48,11 +47,11 @@ public final class Instance {
 			if (params == null || params.length == 0) {
 				return clzz.newInstance();
 			} else {
-				Constructor<T> t = null;
+				Constructor<?> t = null;
 				for (Constructor<?> c : clzz.getConstructors()) {
 					if (compareParameters(c.getParameterTypes(), params)) {
 						if (t == null) {
-							t = (Constructor<T>) c;
+							t = c;
 						} else {
 							throw new Exception(
 									"Can not exactly match the vararg Constructor type.");
@@ -60,8 +59,8 @@ public final class Instance {
 					}
 				}
 				if (t != null) {
-					return t.getParameterCount() == 0 ? t.newInstance() : t
-							.newInstance(params);
+					return clzz.cast(t.getParameterCount() == 0 ? t
+							.newInstance() : t.newInstance(params));
 				}
 			}
 		} catch (Exception e) {
@@ -71,7 +70,7 @@ public final class Instance {
 			for (Method m : clzz.getDeclaredMethods()) {
 				if (m.getReturnType() == clzz
 						&& compareParameters(m.getParameterTypes(), params)) {
-					return (T) m.invoke(clzz, params);
+					return clzz.cast(m.invoke(clzz, params));
 				}
 			}
 		} catch (Exception e) {

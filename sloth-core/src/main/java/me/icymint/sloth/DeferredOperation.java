@@ -13,7 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package me.icymint.sloth;
+
 /**
- * Deferred package implements the similar function of defer in Golang in Java.
+ * Deferred operation needs to be executed later.
+ * 
+ * @author Daniel
+ *
  */
-package me.icymint.sloth.core.defer;
+@FunctionalInterface
+public interface DeferredOperation {
+	/**
+	 * Implements the detailed operation.
+	 * 
+	 * @throws Exception
+	 *             execute error then throws exception.
+	 */
+	void execute() throws Exception;
+}

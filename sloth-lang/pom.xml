@@ -10,4 +10,12 @@
 	</parent>
 	<artifactId>sloth-lang</artifactId>
 	<name>sloth-lang</name>
+	<dependencies>
+		<dependency>
+			<groupId>org.jodd</groupId>
+			<artifactId>jodd-core</artifactId>
+			<version>3.5.2</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>

@@ -27,7 +27,7 @@ import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 
 import jodd.util.StringTemplateParser;
-import me.icymint.sloth.core.defer.Deferred;
+import me.icymint.sloth.Deferred;
 import me.icymint.sloth.core.module.Module;
 import me.icymint.sloth.core.module.Plugin;
 import me.icymint.sloth.core.module.RequirePlugins;

@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 
-import me.icymint.sloth.core.defer.Deferred;
+import me.icymint.sloth.Deferred;
 import me.icymint.sloth.core.module.Module;
 import me.icymint.sloth.core.module.Plugin;
 
