@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.icymint.sloth.core.alg;
+package me.icymint.sloth.astar;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -23,6 +23,12 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.concurrent.atomic.LongAdder;
+
+import me.icymint.sloth.astar.AStarUtil;
+import me.icymint.sloth.astar.Area;
+import me.icymint.sloth.astar.Cell;
+import me.icymint.sloth.astar.Mover;
+import me.icymint.sloth.astar.Point;
 
 import org.junit.Test;
 

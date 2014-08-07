@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.icymint.sloth.core.alg;
+package me.icymint.sloth.astar;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import me.icymint.sloth.core.alg.Area.Type;
+import me.icymint.sloth.astar.Area.Type;
 
 /**
  * An A-* algorithm implementation.

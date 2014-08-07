@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.icymint.sloth.core.alg;
+package me.icymint.sloth.astar;
 
 /**
  * A cell is a wrapper of a Point with some useful arguments calculated from the
