@@ -16,9 +16,6 @@
 package me.icymint.sloth;
 
 public class Util {
-	private Util() {
-	}
-
 	/**
 	 * parse string using macro resolver.
 	 * 
@@ -80,5 +77,8 @@ public class Util {
 					+ sb.toString() + ">");
 		}
 		return abc;
+	}
+
+	private Util() {
 	}
 }

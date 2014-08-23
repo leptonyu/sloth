@@ -19,13 +19,13 @@ import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * A container collecting {@link DeferredOperation} objects which need execute
+ * A container collecting {@link AutoCloseable} objects which need execute
  * later. It uses a {@link Stack} to hold them, and executes
- * {@link DeferredOperation} objects by order of last-in-first-out (LIFO).
+ * {@link AutoCloseable} objects by order of last-in-first-out (LIFO).
  * <p>
  * 
  * @author Daniel Yu
- * @see DeferredOperation
+ * @see AutoCloseable
  * @see Stack
  */
 public final class Deferred implements AutoCloseable {
@@ -39,7 +39,7 @@ public final class Deferred implements AutoCloseable {
 	}
 
 	private final AtomicBoolean _shutdown = new AtomicBoolean(false);
-	private final Stack<DeferredOperation> _stack = new Stack<>();
+	private final Stack<AutoCloseable> _stack = new Stack<>();
 
 	private Deferred() {
 	}
@@ -53,7 +53,7 @@ public final class Deferred implements AutoCloseable {
 			Exception ex = null;
 			while (!_stack.isEmpty()) {
 				try {
-					_stack.pop().execute();
+					_stack.pop().close();
 				} catch (Exception e) {
 					if (ex == null) {
 						ex = new Exception();
@@ -67,18 +67,18 @@ public final class Deferred implements AutoCloseable {
 	}
 
 	/**
-	 * Add the {@link DeferredOperation} object to containers.
+	 * Add the {@link AutoCloseable} object to containers.
 	 * 
 	 * @param operation
-	 *            target {@link DeferredOperation} object.
+	 *            target {@link AutoCloseable} object.
 	 * @return {@link Deferred} object itself.
 	 * @throws IllegalStateException
 	 *             if the object has been closed by running {@link #close()},
 	 *             then throws IllegalStateException exception.
 	 */
-	public final Deferred defer(DeferredOperation operation)
+	public final Deferred defer(AutoCloseable operation)
 			throws IllegalStateException {
-		if (_shutdown.get()) {
+		if (operation == null || _shutdown.get()) {
 			throw new IllegalStateException();
 		}
 		_stack.push(operation);

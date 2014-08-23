@@ -62,6 +62,7 @@ public abstract class AbstractContext<P> implements Plugin {
 	 * @param configpath
 	 *            Class path in which the configuration file was found.
 	 * @throws Exception
+	 *             init error
 	 */
 	protected abstract void initAndDefer(Module context, Deferred deferred,
 			P properties, File configpath) throws Exception;
