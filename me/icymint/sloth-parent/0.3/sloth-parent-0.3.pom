@@ -13,7 +13,8 @@
 		<module>sloth-jetty</module>
 		<module>sloth-wechat</module>
     <module>sloth-lang</module>
-  </modules>
+    <module>sloth-acm</module>
+	</modules>
 	<licenses>
 		<license>
 			<name>Apache License 2.0</name>
