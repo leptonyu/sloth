@@ -10,9 +10,12 @@ public class MatrixTest {
 
 	@Test
 	public void test() {
-		Matrix y = Matrix.random(10, 0, 10);
+		Matrix y = Matrix.random(5, 0, 5);
 		print(y);
+		System.out.println(y.abs());
 		y = y.change();
 		print(y);
+		System.out.println(y.abs());
+		print(y.change());
 	}
 }

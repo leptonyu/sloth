@@ -356,7 +356,6 @@ public class Matrix {
 					if (r != 0) {
 						mm.kableRow(i, o);
 						mm.increaseRow(i, k, -r);
-						mm.trimRow(i);
 					}
 				}
 			}
@@ -364,7 +363,18 @@ public class Matrix {
 		return mm;
 	}
 
-	private void trimRow(int i) {
+	public int abs() {
+		if (m != n)
+			return 0;
+		Matrix mm = change();
+		int v = 1;
+		for (int i = 0; i < n; i++) {
+			v *= mm.data[i][i];
+		}
+		return v;
+	}
+
+	protected void trimRow(int i) {
 		if (i < 0 || i >= n)
 			throw new IllegalArgumentException();
 		int gcd = 0;
