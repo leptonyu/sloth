@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title th:text="${title}">Title</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"
+	href="../../css/bootstrap.min.css" />
+</head>
+<body class="container">
+	<div th:include="layout :: head"></div>
+	<h4>Users</h4>
+	<div class="panel panel-default">
+		<table class="table">
+			<thead>
+				<tr>
+					<th th:text="#{username}" />
+					<th th:text="#{password}" />
+					<th th:text="#{role}" />
+					<th th:text="#{enabled}"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="u : ${ur.findAll()}">
+					<td th:text="${u.username}" />
+					<td th:text="${u.password}" />
+					<!-- <td th:text="${uds.rolesByUsername(u.username)}"> -->
+					<td><select id="selectError">
+							<option th:each="r : ${uds.rolesByUsername(u.username)}"
+								th:text="${r}"></option>
+					</select></td>
+					<td th:text="#{${u.enabled}}" title="是否关闭"></td>
+				</tr>
+				<tr th:remove="all">
+					<td>Yummy1</td>
+					<td>Noodles, with Cheese</td>
+					<td>$13.99</td>
+					<td>15</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div th:include="layout :: footer"></div>
+</body>
+</html>

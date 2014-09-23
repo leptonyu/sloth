@@ -1,0 +1,3 @@
+org.springframework.context.ApplicationListener=\
+me.icymint.sloth.web.security.DataSourcePrefixListener,\
+me.icymint.sloth.web.security.AdminAutoAddon

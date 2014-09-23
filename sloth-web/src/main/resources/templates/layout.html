@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<body>
+	<div th:fragment="head">
+		<div class="navbar navbar-inverse" role="navigation">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" th:href="@{/}" th:text="#{home}">Boot</a>
+				</div>
+				<div class="collapse navbar-collapse"
+					id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li><a th:href="@{/}" href="home.html"> Home </a></li>
+						<li><a sec:authorize="hasRole('ROLE_USER')"
+							th:href="@{/logout}" href="logout"> Logout </a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div th:fragment="foot">
+		<footer>
+			<p>&copy; Daniel 2014</p>
+		</footer>
+	</div>
+</body>
+
+</html>

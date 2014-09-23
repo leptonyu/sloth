@@ -10,11 +10,9 @@
 	<url>http://github.com/leptonyu/sloth</url>
 	<modules>
 		<module>sloth-core</module>
-		<module>sloth-jetty</module>
-		<module>sloth-wechat</module>
-    <module>sloth-lang</module>
-    <module>sloth-acm</module>
-	</modules>
+		<module>sloth-lang</module>
+    
+  </modules>
 	<licenses>
 		<license>
 			<name>Apache License 2.0</name>
@@ -29,6 +27,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<github.global.server>github</github.global.server>
+		<java.version>1.8</java.version>
 	</properties>
 	<developers>
 		<developer>

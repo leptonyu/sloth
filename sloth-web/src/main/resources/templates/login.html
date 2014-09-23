@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<title th:text="#{home.title}">Boot 模板</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" href="/css/bootstrap.min.css" />
+<link rel="stylesheet" href="/css/font-awesome.min.css" />
+<!--[if IE 7]>
+<link rel="stylesheet" href="/css/font-awesome-ie7.min.css">
+<![endif]-->
+<style type="text/css">
+body {
+	padding-top: 40px;
+	padding-bottom: 40px;
+	background-color: #eee;
+}
+
+.form-signin {
+	max-width: 330px;
+	padding: 15px;
+	margin: 0 auto;
+}
+
+.form-signin .form-signin-heading, .form-signin .checkbox {
+	margin-bottom: 10px;
+}
+
+.form-signin .checkbox {
+	font-weight: normal;
+}
+
+.form-signin .form-control {
+	position: relative;
+	height: auto;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	padding: 10px;
+	font-size: 16px;
+}
+
+.form-signin .form-control:focus {
+	z-index: 2;
+}
+</style>
+</head>
+<body onload="document.username.focus();">
+	<div class="content">
+		<form th:action="@{/login}" method="post" name="form"
+			class="form-signin">
+			<h2 class="form-signin-heading" th:text="#{login.welcome}">Welcome
+				to our grocery store!</h2>
+			<div class="input-group">
+				<span class="input-group-addon"><i class="icon-envelope"></i></span>
+				<input type="text" name="username" class="form-control"
+					th:placeholder="#{username}" />
+			</div>
+			<div class="input-group">
+				<span class="input-group-addon"><span class="icon-key"></span></span>
+				<input type="password" name="password" class="form-control"
+					th:placeholder="#{password}" />
+			</div>
+			<div class="checkbox">
+				<label><input type="checkbox" name="remember-me" th:text="#{remember.me}"/></label>
+			</div>
+			<button type="submit" class="form-control" th:text="#{submit}"></button>
+		</form>
+	</div>
+</body>
+
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title th:text="${title}">Title</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"
+	href="../../css/bootstrap.min.css" />
+</head>
+<body class="container">
+	<div th:include="layout :: head"></div>
+	<h3 th:text="#{home.welcome(${user}==null?#{guest}:${user})}"></h3>
+	<div class="list-group">
+		<a th:href="@{/}" class="list-group-item active">首页</a> <a
+			sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin}"
+			class="list-group-item">管理界面</a>
+	</div>
+	<div th:include="layout :: footer"></div>
+</body>
+</html>
