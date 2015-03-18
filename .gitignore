@@ -5,3 +5,5 @@ pom.xml.next
 release.properties
 pom.xml.versionsBackup
 .settings/
+.project
+.classpath
